@@ -1,0 +1,27 @@
+{
+  "name": "medienbaecker/kirby-token-field",
+  "type": "kirby-plugin",
+  "license": "MIT",
+  "require": {
+    "php": "^8.2",
+    "getkirby/composer-installer": "^1.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "getkirby/composer-installer": true
+    }
+  },
+  "archive": {
+    "exclude": [
+      "src/",
+      "node_modules/",
+      "vendor/",
+      ".DS_Store",
+      ".gitattributes",
+      ".gitignore",
+      "composer.lock",
+      "package.json",
+      "package-lock.json"
+    ]
+  }
+}
