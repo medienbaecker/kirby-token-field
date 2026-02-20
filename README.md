@@ -2,6 +2,8 @@
 
 Kirby's [color field](https://getkirby.com/docs/reference/panel/fields/color) is great for visually selecting colours but I've wanted to save `color-primary` instead of `#d74894` since forever.
 
+<img width="1038" height="934" alt="Screenshot of the token field with previews for colors, fonts, shadows, radii, spacings and font sizes" src="https://github.com/user-attachments/assets/977fa359-8973-46c7-a360-4741cc6b543c" />
+
 This plugin adds a `token` field type that lets you select from visual options while saving whatever you want. It can not only be used for colours but also fonts, spacing values, shadows, or any other design token. So far I've built previews for colours, font families, font sizes, spacing, shadows, border radii, and plain text.
 
 ## Installation
