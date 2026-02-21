@@ -7,7 +7,7 @@ panel.plugin("example/icon-preview", {
 			},
 			template: `
 				<span class="k-token-preview k-token-preview--icon">
-					<k-icon :type="value" />
+					<img :src="'/assets/icons/' + value + '.svg'" :alt="text" />
 				</span>
 			`,
 		},
