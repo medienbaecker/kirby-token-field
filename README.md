@@ -21,14 +21,14 @@ composer require medienbaecker/kirby-token-field
 my_color:
   label: Colour
   type: token
-  query: "var(--{{ value }})"
+  template: "var(--{{ value }})"
   options:
     color-red: Red
     color-blue: Blue
     color-green: Green
 ```
 
-The option key (e.g. `color-red`) is what gets saved to your content file. The `query` option wraps the value for the visual preview — so `var(--color-red)` is used as the CSS colour for the swatch, as long as `--color-red` is defined in your `panel.css`.
+The option key (e.g. `color-red`) is what gets saved to your content file. The `template` option wraps the value for the visual preview — so `var(--color-red)` is used as the CSS colour for the swatch, as long as `--color-red` is defined in your `panel.css`.
 
 ### Display
 
@@ -66,6 +66,30 @@ my_theme:
         - "#40e0d0"
 ```
 
+### Dynamic Options
+
+Options can be fetched dynamically using Kirby's query language, just like the native select, radio, and checkboxes fields. For example, you could create a [custom site method](https://getkirby.com/docs/reference/plugins/extensions/site-methods) that returns your design tokens:
+
+```yaml
+my_color:
+  label: Colour
+  type: token
+  template: "var(--color-{{ value }})"
+  options: site.colors
+```
+
+This also works with the explicit query syntax:
+
+```yaml
+options:
+  type: query
+  query: site.colors
+  text: "{{ item.name }}"
+  value: "{{ item.slug }}"
+```
+
+The `template` option works on top of dynamic options — the resolved `value` is passed through the template before being used for the preview.
+
 ## Preview Types
 
 Set the `preview` option to change how options are displayed. Default is `color`.
@@ -77,7 +101,7 @@ Colour swatches with checkerboard background for transparency.
 ```yaml
 type: token
 preview: color
-query: "var(--{{ value }})"
+template: "var(--{{ value }})"
 options:
   color-primary: Primary
   color-secondary: Secondary
@@ -90,7 +114,7 @@ Renders "Lorem Ipsum" in the given font family. The text can be [customised](#op
 ```yaml
 type: token
 preview: font-family
-query: "var(--font-{{ value }})"
+template: "var(--font-{{ value }})"
 options:
   sans-serif: Sans Serif
   serif: Serif
@@ -184,7 +208,7 @@ panel.plugin("my/preview", {
       },
       template: `
         <span class="k-token-preview k-token-preview--icon">
-          <k-icon :type="value" />
+          <img :src="'/assets/icons/' + value + '.svg'" :alt="text" />
         </span>
       `,
     },
@@ -197,8 +221,13 @@ panel.plugin("my/preview", {
 .k-token-preview--icon {
   height: var(--input-height);
   aspect-ratio: 1;
-  background: var(--color-gray-800);
-  color: var(--color-gray-300);
+  border: 1px solid var(--color-gray-300);
+}
+
+.k-token-preview--icon img {
+  width: 100%;
+  height: 100%;
+  padding: var(--spacing-2);
 }
 ```
 
@@ -210,7 +239,7 @@ my_icon:
   options:
     heart: Heart
     star: Star
-    bolt: Bolt
+    home: Home
 ```
 
 Your component receives two props: `value` (the resolved preview value) and `text` (the configured preview text). Use the `k-token-preview` base class to inherit shared styles like the selection outline.
