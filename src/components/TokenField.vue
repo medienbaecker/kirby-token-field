@@ -37,6 +37,8 @@ export default {
 	},
 	computed: {
 		previewComponent() {
+			const custom = `k-token-preview-${this.preview}`;
+			if (this.$helper.isComponent(custom)) return custom;
 			return previews[this.preview] || null;
 		},
 	},

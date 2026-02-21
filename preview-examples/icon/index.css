@@ -1,0 +1,6 @@
+.k-token-preview--icon {
+	height: var(--input-height);
+	aspect-ratio: 1;
+	background: var(--color-gray-800);
+	color: var(--color-gray-300);
+}

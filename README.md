@@ -161,6 +161,60 @@ options:
   right: Right
 ```
 
+## Custom Previews
+
+You can register your own preview types via `panel.plugin()`. The token field checks for a globally registered component named `k-token-preview-{type}` before falling back to the built-in previews. See the `preview-examples/` folder for working examples.
+
+Every custom preview plugin needs three files:
+
+```php
+<?php
+// site/plugins/my-preview/index.php
+Kirby::plugin('my/preview', []);
+```
+
+```js
+// site/plugins/my-preview/index.js
+panel.plugin("my/preview", {
+  components: {
+    "k-token-preview-icon": {
+      props: {
+        value: String,
+        text: String,
+      },
+      template: `
+        <span class="k-token-preview k-token-preview--icon">
+          <k-icon :type="value" />
+        </span>
+      `,
+    },
+  },
+});
+```
+
+```css
+/* site/plugins/my-preview/index.css */
+.k-token-preview--icon {
+  height: var(--input-height);
+  aspect-ratio: 1;
+  background: var(--color-gray-800);
+  color: var(--color-gray-300);
+}
+```
+
+```yaml
+my_icon:
+  label: Icon
+  type: token
+  preview: icon
+  options:
+    heart: Heart
+    star: Star
+    bolt: Bolt
+```
+
+Your component receives two props: `value` (the resolved preview value) and `text` (the configured preview text). Use the `k-token-preview` base class to inherit shared styles like the selection outline.
+
 ## Using CSS Variables in Previews
 
 If your options reference CSS custom properties (e.g. `var(--color-primary)`), the Panel needs to know about them. Create a `panel.css` in your assets folder and import your colour definitions:
