@@ -78,7 +78,29 @@ my_color:
   options: site.colors
 ```
 
-This also works with the explicit query syntax:
+Common return formats are detected automatically — no `text` or `value` templates needed:
+
+```php
+// Associative array: key → saved value, value → label
+'colors' => function () {
+    return [
+        'red-500'  => 'Red',
+        'blue-500' => 'Blue',
+    ];
+}
+
+// Array of arrays with value/text keys
+'colors' => function () {
+    return [
+        ['value' => '#ff0000', 'text' => 'Red'],
+        ['value' => '#0000ff', 'text' => 'Blue'],
+    ];
+}
+```
+
+Pages, files, and other collections also work out of the box with Kirby's defaults (e.g. page title and ID).
+
+For custom property names, use the explicit query syntax:
 
 ```yaml
 options:

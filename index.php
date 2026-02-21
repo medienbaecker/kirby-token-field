@@ -50,11 +50,51 @@ Kirby::plugin('medienbaecker/token-field', [
 						|| isset($this->options['type']);
 				},
 				'resolveDynamic' => function (): array {
-					$props = FieldOptions::polyfill([
-						'options' => $this->options,
-					]);
-					$options = FieldOptions::factory($props['options']);
-					$resolved = $options->render($this->model());
+					$options = $this->options;
+					$query   = is_string($options) ? $options : ($options['query'] ?? null);
+					$hasText  = is_array($options) && isset($options['text']);
+					$hasValue = is_array($options) && isset($options['value']);
+
+					// If user provided explicit templates, use FieldOptions as-is
+					if ($hasText && $hasValue) {
+						$props = FieldOptions::polyfill(['options' => $options]);
+						$resolved = FieldOptions::factory($props['options'])->render($this->model());
+
+						return array_map(fn($opt) => [
+							'value'   => (string)$opt['value'],
+							'text'    => $opt['text'],
+							'display' => null,
+						], $resolved);
+					}
+
+					// Otherwise, run query once and normalize common formats
+					$result = $this->model()->query($query);
+
+					if (is_array($result)) {
+						$normalized = [];
+
+						foreach ($result as $key => $item) {
+							if (is_array($item) && isset($item['value'])) {
+								$normalized[] = [
+									'value'   => (string)$item['value'],
+									'text'    => $item['text'] ?? $item['label'] ?? (string)$item['value'],
+									'display' => null,
+								];
+							} elseif (is_scalar($item)) {
+								$normalized[] = [
+									'value'   => (string)$key,
+									'text'    => (string)$item,
+									'display' => null,
+								];
+							}
+						}
+
+						return $normalized;
+					}
+
+					// Fall back to FieldOptions for non-array results (pages, files, etc.)
+					$props = FieldOptions::polyfill(['options' => $options]);
+					$resolved = FieldOptions::factory($props['options'])->render($this->model());
 
 					return array_map(fn($opt) => [
 						'value'   => (string)$opt['value'],
