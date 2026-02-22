@@ -112,6 +112,18 @@ options:
 
 The `template` option works on top of dynamic options — the resolved `value` is passed through the template before being used for the preview.
 
+### Default Value
+
+Set a specific default or use `default: true` to auto-select the first option. This is especially useful for dynamic options where the values can change over time:
+
+```yaml
+my_color:
+  label: Colour
+  type: token
+  default: true # picks the first option automatically
+  options: site.colors
+```
+
 ## Preview Types
 
 Set the `preview` option to change how options are displayed. Default is `color`.
@@ -235,7 +247,7 @@ panel.plugin("my/preview", {
       `,
     },
   },
-});
+})
 ```
 
 ```css
