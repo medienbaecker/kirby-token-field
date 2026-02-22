@@ -13,3 +13,4 @@ node_modules/ export-ignore
 # development
 src/ export-ignore
 vendor/ export-ignore
+preview-examples/ export-ignore

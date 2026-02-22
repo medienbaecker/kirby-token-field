@@ -1,5 +1,13 @@
 {
   "name": "medienbaecker/kirby-token-field",
+  "description": "A visual token picker field for Kirby CMS",
+  "keywords": [
+    "kirby",
+    "kirby-plugin",
+    "design-tokens",
+    "color-picker",
+    "panel-field"
+  ],
   "type": "kirby-plugin",
   "license": "MIT",
   "require": {
