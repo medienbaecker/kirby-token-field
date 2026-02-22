@@ -5,7 +5,7 @@
 			<ul>
 				<li v-for="(option, index) in options" :key="index">
 					<label :title="option.text">
-						<input :checked="option.value === value" :disabled="disabled" :name="name || id"
+						<input :aria-label="option.text" :checked="option.value === value" :disabled="disabled" :name="name || id"
 							:value="option.value" class="input-hidden" type="radio" @click="toggle(option.value)"
 							@input="$emit('input', option.value)" />
 						<component v-if="previewComponent" :is="previewComponent" :value="previewValue(option)"
@@ -76,7 +76,7 @@ export default {
 .k-token-input ul {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 4px;
+	gap: var(--spacing-1);
 	list-style: none;
 	padding: 0;
 	margin: 0;
