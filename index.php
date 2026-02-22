@@ -23,6 +23,22 @@ Kirby::plugin('medienbaecker/token-field', [
 				},
 			],
 			'computed' => [
+				'default' => function () {
+					if ($this->default === true) {
+						if ($this->isDynamic()) {
+							$options = $this->resolveDynamic();
+						} else {
+							$options = $this->resolveStatic();
+						}
+						return $options[0]['value'] ?? null;
+					}
+
+					if ($this->default === null) {
+						return null;
+					}
+
+					return $this->model()->toString($this->default);
+				},
 				'options' => function (): array {
 					if ($this->isDynamic()) {
 						$options = $this->resolveDynamic();
