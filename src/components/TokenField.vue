@@ -19,6 +19,7 @@
 
 <script>
 import previews from "./previews/index.js";
+import { toGradient } from "../utils.js";
 
 export default {
 	inheritAttrs: false,
@@ -51,17 +52,8 @@ export default {
 		previewValue(option) {
 			if (this.preview === "text") return option.text;
 			if (!option.display) return option.value;
-			if (Array.isArray(option.display)) return this.toGradient(option.display);
+			if (Array.isArray(option.display)) return toGradient(option.display);
 			return option.display;
-		},
-		toGradient(colors) {
-			if (colors.length === 0) return "transparent";
-			if (colors.length === 1) return colors[0];
-			const step = 100 / colors.length;
-			const stops = colors
-				.map((c, i) => `${c} ${i * step}% ${(i + 1) * step}%`)
-				.join(", ");
-			return `linear-gradient(to right, ${stops})`;
 		},
 	},
 };
@@ -88,7 +80,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: var(--rounded);
+	border-radius: var(--token-preview-rounded, var(--rounded));
 }
 
 .k-token-input input:checked+.k-token-preview {
