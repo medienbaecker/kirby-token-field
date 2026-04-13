@@ -7,6 +7,7 @@ export default {
 	props: {
 		value: String,
 		text: String,
+		compact: Boolean,
 	},
 };
 </script>

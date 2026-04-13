@@ -219,6 +219,12 @@ options:
   right: Right
 ```
 
+## Structure Field Preview
+
+The token field automatically provides a compact preview when used inside a structure field — no extra configuration needed. Visual previews like colours, shadows, and radii show a small swatch, while text-based types show the option label.
+
+Custom preview components receive a `compact` Boolean prop when rendered inside a structure table. You can use it to adapt your preview for the smaller space, or simply ignore it.
+
 ## Custom Previews
 
 You can register your own preview types via `panel.plugin()`. The token field checks for a globally registered component named `k-token-preview-{type}` before falling back to the built-in previews. See the `preview-examples/` folder for working examples.
@@ -277,6 +283,13 @@ my_icon:
 ```
 
 Your component receives two props: `value` (the resolved preview value) and `text` (the configured preview text). Use the `k-token-preview` base class to inherit shared styles like the selection outline.
+
+### Structure table support
+
+When your custom preview renders inside a structure table, two things change:
+
+1. **CSS custom property** — `--token-preview-size` is set to a compact size. Use `var(--token-preview-size, var(--input-height))` instead of a fixed `var(--input-height)` for width/height so your preview scales down automatically.
+2. **`compact` prop** — a Boolean prop is passed as `true`. You can use this if you need to change behaviour beyond just sizing (e.g. hiding labels, simplifying rendering).
 
 ## Using CSS Variables in Previews
 

@@ -8,14 +8,15 @@
 export default {
 	props: {
 		value: String,
+		compact: Boolean,
 	},
 };
 </script>
 
 <style>
 .k-token-preview--shadow {
-	width: var(--input-height);
-	height: var(--input-height);
+	width: var(--token-preview-size, var(--input-height));
+	height: var(--token-preview-size, var(--input-height));
 	border: 1px solid var(--color-border);
 	background: var(--color-white);
 }
