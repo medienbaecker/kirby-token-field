@@ -110,6 +110,8 @@ options:
   value: "{{ item.slug }}"
 ```
 
+`display` works here too — pass a string, array, or object template and it'll be resolved per item. See [`contrast`](#contrast) for an object-form example.
+
 The `template` option works on top of dynamic options — the resolved `value` is passed through the template before being used for the preview.
 
 ### Default Value
@@ -139,6 +141,23 @@ template: "var(--{{ value }})"
 options:
   color-primary: Primary
   color-secondary: Secondary
+```
+
+### `contrast`
+
+Renders "Aa" in a text colour on a background colour. Needs a `display` object with `background` and `color`:
+
+```yaml
+type: token
+preview: contrast
+options:
+  type: query
+  query: site.color_combinations.toStructure
+  text: "{{ item.name }}"
+  value: "{{ item.slug }}"
+  display:
+    background: "{{ item.color_background }}"
+    color: "{{ item.color_text }}"
 ```
 
 ### `font-family`

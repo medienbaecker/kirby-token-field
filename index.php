@@ -71,16 +71,47 @@ Kirby::plugin('medienbaecker/token-field', [
 					$hasText  = is_array($options) && isset($options['text']);
 					$hasValue = is_array($options) && isset($options['value']);
 
-					// If user provided explicit templates, use FieldOptions as-is
+					// If user provided explicit templates, iterate manually so
+					// we can also apply an optional `display` template per item.
+					// Kirby's OptionsQuery has no extension point for extra
+					// templates, so we replicate its alias + escaping behavior.
 					if ($hasText && $hasValue) {
-						$props = FieldOptions::polyfill(['options' => $options]);
-						$resolved = FieldOptions::factory($props['options'])->render($this->model());
+						$items   = $this->model()->query($query);
+						$display = $options['display'] ?? null;
+						$model   = $this->model();
 
-						return array_map(fn($opt) => [
-							'value'   => (string)$opt['value'],
-							'text'    => $opt['text'],
-							'display' => null,
-						], $resolved);
+						$result = [];
+						foreach ($items as $item) {
+							// Mirrors Kirby\Option\OptionsQuery::itemToDefaults
+							// so `{{ page.title }}`, `{{ file.url }}`, etc. resolve
+							// the same way as anywhere else in Kirby.
+							$alias = match (true) {
+								$item instanceof \Kirby\Cms\Page            => 'page',
+								$item instanceof \Kirby\Cms\File            => 'file',
+								$item instanceof \Kirby\Cms\User            => 'user',
+								$item instanceof \Kirby\Cms\Block           => 'block',
+								$item instanceof \Kirby\Cms\StructureObject => 'structureItem',
+								is_array($item), $item instanceof \Kirby\Toolkit\Obj => 'arrayItem',
+								default                                     => 'item',
+							};
+							$data = [$alias => $item, 'item' => $item];
+
+							$displayValue = match (true) {
+								$display === null  => null,
+								is_array($display) => array_map(
+									fn($tpl) => $model->toSafeString($tpl, $data),
+									$display
+								),
+								default            => $model->toSafeString($display, $data),
+							};
+
+							$result[] = [
+								'value'   => (string) $model->toString($options['value'], $data),
+								'text'    => $model->toSafeString($options['text'], $data),
+								'display' => $displayValue,
+							];
+						}
+						return $result;
 					}
 
 					// Otherwise, run query once and normalize common formats

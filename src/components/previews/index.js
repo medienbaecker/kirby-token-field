@@ -1,4 +1,5 @@
 import Color from "./Color.vue"
+import Contrast from "./Contrast.vue"
 import FontFamily from "./FontFamily.vue"
 import FontSize from "./FontSize.vue"
 import Size from "./Size.vue"
@@ -8,6 +9,7 @@ import Text from "./Text.vue"
 
 export default {
   color: Color,
+  contrast: Contrast,
   "font-family": FontFamily,
   "font-size": FontSize,
   size: Size,

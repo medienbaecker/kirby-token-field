@@ -9,7 +9,7 @@
 							:value="option.value" class="input-hidden" type="radio" @click="toggle(option.value)"
 							@input="$emit('input', option.value)" />
 						<component v-if="previewComponent" :is="previewComponent" :value="previewValue(option)"
-							:text="previewText" />
+							:text="previewText" :display="previewDisplay(option)" />
 					</label>
 				</li>
 			</ul>
@@ -19,7 +19,7 @@
 
 <script>
 import previews from "./previews/index.js";
-import { toGradient } from "../utils.js";
+import { splitDisplay } from "../utils.js";
 
 export default {
 	inheritAttrs: false,
@@ -51,9 +51,10 @@ export default {
 		},
 		previewValue(option) {
 			if (this.preview === "text") return option.text;
-			if (!option.display) return option.value;
-			if (Array.isArray(option.display)) return toGradient(option.display);
-			return option.display;
+			return splitDisplay(option).value;
+		},
+		previewDisplay(option) {
+			return splitDisplay(option).display;
 		},
 	},
 };

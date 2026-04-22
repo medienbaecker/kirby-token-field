@@ -11,3 +11,16 @@ export function toGradient(colors) {
 		.join(", ");
 	return `linear-gradient(to right, ${stops})`;
 }
+
+/**
+ * Splits an option's `display` into a scalar preview `value` (what a single-value
+ * preview component reads) and a raw `display` object (what multi-value previews
+ * like `contrast` read). Keeps the dispatch logic out of the two components.
+ */
+export function splitDisplay(option) {
+	const d = option?.display;
+	if (!d) return { value: option?.value, display: undefined };
+	if (Array.isArray(d)) return { value: toGradient(d), display: undefined };
+	if (typeof d === "object") return { value: option.value, display: d };
+	return { value: d, display: undefined };
+}
