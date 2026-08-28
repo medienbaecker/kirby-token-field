@@ -24,7 +24,9 @@ Kirby::plugin('medienbaecker/token-field', [
 			],
 			'computed' => [
 				'default' => function () {
-					if ($this->default === true) {
+					$default = $this->rawProp('default');
+
+					if ($default === true) {
 						if ($this->isDynamic()) {
 							$options = $this->resolveDynamic();
 						} else {
@@ -33,11 +35,11 @@ Kirby::plugin('medienbaecker/token-field', [
 						return $options[0]['value'] ?? null;
 					}
 
-					if ($this->default === null) {
+					if ($default === null) {
 						return null;
 					}
 
-					return $this->model()->toString($this->default);
+					return $this->model()->toString($default);
 				},
 				'options' => function (): array {
 					if ($this->isDynamic()) {
@@ -61,12 +63,17 @@ Kirby::plugin('medienbaecker/token-field', [
 				},
 			],
 			'methods' => [
+				// Component resets these properties, Field::fill() recomputes
+				'rawProp' => function (string $name, mixed $fallback = null): mixed {
+					return $this->props[$name] ?? $fallback;
+				},
 				'isDynamic' => function (): bool {
-					return is_string($this->options)
-						|| isset($this->options['type']);
+					$options = $this->rawProp('options', []);
+
+					return is_string($options) || isset($options['type']);
 				},
 				'resolveDynamic' => function (): array {
-					$options = $this->options;
+					$options = $this->rawProp('options', []);
 					$query   = is_string($options) ? $options : ($options['query'] ?? null);
 					$hasText  = is_array($options) && isset($options['text']);
 					$hasValue = is_array($options) && isset($options['value']);
@@ -152,7 +159,7 @@ Kirby::plugin('medienbaecker/token-field', [
 				'resolveStatic' => function (): array {
 					$result = [];
 
-					foreach ($this->options as $key => $option) {
+					foreach ($this->rawProp('options', []) as $key => $option) {
 						if (is_string($option)) {
 							$result[] = [
 								'value'   => (string)$key,
