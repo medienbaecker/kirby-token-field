@@ -36,6 +36,7 @@ export default {
 		preview: { type: String, default: "color" },
 		previewText: { type: String, default: "" },
 	},
+	emits: ["input"],
 	computed: {
 		previewComponent() {
 			const custom = `k-token-preview-${this.preview}`;
