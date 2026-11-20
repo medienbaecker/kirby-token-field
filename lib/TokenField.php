@@ -9,7 +9,9 @@ use Kirby\Cms\StructureObject;
 use Kirby\Cms\User;
 use Kirby\Form\Field\OptionField;
 use Kirby\Form\FieldOptions;
+use Kirby\Option\ProtectedOption;
 use Kirby\Reflection\Attributes\Prop;
+use Kirby\Toolkit\A;
 use Kirby\Toolkit\Obj;
 use Kirby\Toolkit\Str;
 
@@ -20,6 +22,8 @@ class TokenField extends OptionField
 
 	#[Prop]
 	protected string|null $template = null;
+
+	protected array|null $tokenOptions = null;
 
 	public function default(): mixed
 	{
@@ -63,11 +67,36 @@ class TokenField extends OptionField
 		return $this->template;
 	}
 
-	protected function fetchOptions(): array
+	public function options(): array
 	{
-		$options = $this->isDynamic() ? $this->resolveDynamic() : $this->resolveStatic();
+		$this->tokenOptions ??= $this->applyTemplate(
+			$this->isDynamic() ? $this->resolveDynamic() : $this->resolveStatic()
+		);
 
-		return $this->applyTemplate($options);
+		$values = [
+			...A::wrap($this->toFormValue()),
+			...A::wrap(parent::default())
+		];
+
+		$options = [];
+
+		foreach ($this->tokenOptions as $option) {
+			if ($option instanceof ProtectedOption) {
+				if (in_array($option->value, $values, true) === false) {
+					continue;
+				}
+
+				$option = [
+					'value'   => $option->value,
+					'text'    => $option->text,
+					'display' => null,
+				];
+			}
+
+			$options[] = $option;
+		}
+
+		return $options;
 	}
 
 	protected function applyTemplate(array $options): array
@@ -77,7 +106,7 @@ class TokenField extends OptionField
 		}
 
 		foreach ($options as &$option) {
-			if ($option['display'] === null) {
+			if (is_array($option) === true && $option['display'] === null) {
 				$option['display'] = Str::template($this->template, ['value' => $option['value']]);
 			}
 		}
@@ -116,10 +145,19 @@ class TokenField extends OptionField
 					is_array($item), $item instanceof Obj => 'arrayItem',
 					default                          => 'item',
 				};
-				$data = [$alias => $item, 'item' => $item];
+				$data  = [$alias => $item, 'item' => $item];
+				$value = (string)$model->toString($options['value'], $data);
+
+				if (
+					($item instanceof Page || $item instanceof File || $item instanceof User) &&
+					$item->isListable() === false
+				) {
+					$result[] = new ProtectedOption($value);
+					continue;
+				}
 
 				$result[] = [
-					'value'   => (string)$model->toString($options['value'], $data),
+					'value'   => $value,
 					'text'    => $model->toSafeString($options['text'], $data),
 					'display' => match (true) {
 						$display === null  => null,
@@ -159,14 +197,24 @@ class TokenField extends OptionField
 			return $normalized;
 		}
 
-		$props    = FieldOptions::polyfill(['options' => $options]);
-		$resolved = FieldOptions::factory($props['options'])->render($model);
+		$props  = FieldOptions::polyfill(['options' => $options]);
+		$result = [];
 
-		return array_map(fn ($option) => [
-			'value'   => (string)$option['value'],
-			'text'    => $option['text'],
-			'display' => null,
-		], $resolved);
+		foreach (FieldOptions::factory($props['options'])->resolve($model) as $option) {
+			if ($option instanceof ProtectedOption) {
+				$result[] = $option;
+				continue;
+			}
+
+			$rendered = $option->render($model);
+			$result[] = [
+				'value'   => (string)$rendered['value'],
+				'text'    => $rendered['text'],
+				'display' => null,
+			];
+		}
+
+		return $result;
 	}
 
 	protected function resolveStatic(): array
