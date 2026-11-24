@@ -16,6 +16,7 @@ Version 6 requires Kirby 6. For Kirby 5, use version 1.x: `composer require medi
 
 > [!TIP]
 > You can also install this plugin manually by downloading the repository and placing it in `site/plugins/token-field`.
+> For Kirby 5, download the [1.3.2 release](https://github.com/medienbaecker/kirby-token-field/releases/tag/1.3.2) instead.
 
 ## Usage
 
