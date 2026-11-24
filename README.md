@@ -12,6 +12,8 @@ This plugin adds a `token` field type that lets you select from visual options w
 composer require medienbaecker/kirby-token-field
 ```
 
+Version 6 requires Kirby 6. For Kirby 5, use version 1.x: `composer require medienbaecker/kirby-token-field:^1.0`.
+
 > [!TIP]
 > You can also install this plugin manually by downloading the repository and placing it in `site/plugins/token-field`.
 
