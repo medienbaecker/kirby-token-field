@@ -2,17 +2,20 @@
 	<k-field v-bind="$props" :class="['k-token-field', $attrs.class]" :input="id" :style="$attrs.style">
 		<fieldset :disabled="disabled" class="k-token-input">
 			<legend class="sr-only">{{ label }}</legend>
-			<ul>
-				<li v-for="(option, index) in options" :key="index">
-					<label :title="option.text">
-						<input :aria-label="option.text" :checked="option.value === value" :disabled="disabled" :name="name || id"
-							:value="option.value" class="input-hidden" type="radio" @click="toggle(option.value)"
-							@input="$emit('input', option.value)" />
-						<component v-if="previewComponent" :is="previewComponent" :value="previewValue(option)"
-							:text="previewText" :display="previewDisplay(option)" />
-					</label>
-				</li>
-			</ul>
+			<k-input-validator :required="required" :value="JSON.stringify(value)">
+				<ul>
+					<li v-for="(option, index) in choices" :key="index">
+						<label :title="option.text">
+							<input :aria-label="option.text" :checked="option.value === value" :disabled="disabled" :name="name || id"
+								:value="option.value" class="input-hidden" type="radio" @click="toggle(option.value)"
+								@input="$emit('input', option.value)" />
+							<text-preview v-if="index >= options.length" :value="option.text" />
+							<component v-else-if="previewComponent" :is="previewComponent" :value="previewValue(option)"
+								:text="previewText" :display="previewDisplay(option)" />
+						</label>
+					</li>
+				</ul>
+			</k-input-validator>
 		</fieldset>
 	</k-field>
 </template>
@@ -22,6 +25,7 @@ import previews from "./previews/index.js";
 import { splitDisplay } from "../utils.js";
 
 export default {
+	components: { TextPreview: previews.text },
 	inheritAttrs: false,
 	props: {
 		disabled: Boolean,
@@ -38,6 +42,9 @@ export default {
 	},
 	emits: ["input"],
 	computed: {
+		choices() {
+			return this.$helper.field.options(this.options, this.value);
+		},
 		previewComponent() {
 			const custom = `k-token-preview-${this.preview}`;
 			if (this.$helper.isComponent(custom)) return custom;
