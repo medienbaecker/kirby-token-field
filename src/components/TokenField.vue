@@ -9,7 +9,7 @@
 							<input :aria-label="option.text" :checked="option.value === value" :disabled="disabled" :name="name || id"
 								:value="option.value" class="input-hidden" type="radio" @click="toggle(option.value)"
 								@input="$emit('input', option.value)" />
-							<text-preview v-if="index >= options.length" :value="option.text" />
+							<text-preview v-if="index >= options.length" :value="option.text" class="k-token-preview--unknown" />
 							<component v-else-if="previewComponent" :is="previewComponent" :value="previewValue(option)"
 								:text="previewText" :display="previewDisplay(option)" />
 						</label>
@@ -83,6 +83,12 @@ export default {
 	margin: 0;
 }
 
+.k-token-input label {
+	display: flex;
+	align-items: flex-start;
+	height: 100%;
+}
+
 /* Shared preview base */
 .k-token-preview {
 	position: relative;
@@ -90,6 +96,10 @@ export default {
 	align-items: center;
 	justify-content: center;
 	border-radius: var(--token-preview-rounded, var(--rounded));
+}
+
+.k-token-preview--unknown {
+	align-self: stretch;
 }
 
 .k-token-input input:checked+.k-token-preview {
